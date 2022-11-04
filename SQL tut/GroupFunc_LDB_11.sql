@@ -21,3 +21,24 @@ FROM employee emp
     ON s.store_id = emp.store_id
 GROUP BY mngr.manager_id, name, store_id, mngr.last_name, mngr.first_name
 ORDER BY store_name, manager_full_name
+
+/*https://learndb.ru/courses/task/48
+
+Задача
+	Для каждого товара получи минимальную и максимальную стоимость из таблицы product_price. Выведи столбцы:
+
+	product_id - идентификатор товара;
+	price_min - минимальная стоимость товара;
+	price_max - максимальная стоимость товара.
+	В результате оставь только те товары, для которых минимальная и максимальная стоимость отличается.
+
+	Отсортируй результат по идентификатору товара.*/
+	
+SELECT
+    product_id
+  , MIN(price) price_min
+  , MAX(price) price_max
+FROM product_price
+GROUP BY product_id
+HAVING MIN(price) != MAX(price)
+ORDER BY product_id
