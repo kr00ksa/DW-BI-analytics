@@ -6,7 +6,9 @@
 	Выведи поля:
 	name - название категории;
 	product_example - название примера продукта в категории. Возьми первый по алфавиту товар в категории.
-	Отсортируй результат по названию категории.*/
+	Отсортируй результат по названию категории.
+	
+Решение 1:*/
 	
 SELECT
     c.name AS name 
@@ -18,7 +20,8 @@ SELECT
 FROM category c 
 ORDER BY name
 
--- Также задачу можно решить с помощью оконной функции 
+
+-- Решение 2: 
 
 WITH t1 AS 
 (
@@ -36,3 +39,15 @@ SELECT
 FROM t1
 WHERE rnk = 1
 ORDER BY name
+
+
+-- Решение 3:
+
+SELECT DISTINCT ON (c.name)
+      c.name AS name 
+    , p.name product_example
+FROM category c
+    LEFT JOIN product p
+      ON c.category_id = p.category_id
+ORDER BY c.name, product_example
+    
