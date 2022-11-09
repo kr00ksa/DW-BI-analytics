@@ -27,3 +27,25 @@ WHERE pp.price = (SELECT MAX(tpp.price)
                     ON tp.product_id = tpp.product_id
                   WHERE ct.name = c.name)
 ORDER BY category_name, product_name
+
+
+--Также эту задачу можно решить с помощью оконной функции
+
+SELECT category_name
+  , product_name
+   , price
+FROM
+(
+  SELECT
+      c.name category_name
+    , p.name product_name
+    , pp.price
+    , rank() OVER (PARTITION BY c.name ORDER BY pp.price DESC) rnk
+  FROM category c
+    INNER JOIN product p
+      ON c.category_id = p.category_id
+    INNER JOIN product_price pp
+      ON p.product_id = pp.product_id
+) tt
+WHERE rnk = 1
+ORDER BY category_name, product_name
