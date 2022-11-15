@@ -29,3 +29,12 @@ if (x2 == x1 or x2 == x1 - 1 or x2 == x1 + 1) and (y2 == y1 or y2 == y1 - 1 or y
     print('YES')
 else:
     print('NO')
+    
+Или короче:
+
+x1, y1, x2, y2 = int(input()), int(input()), int(input()), int(input())
+
+if (-1 <= x2 - x1 <= 1) and (-1 <= y2 - y1 <= 1):
+    print('YES')
+else:
+    print('NO')
