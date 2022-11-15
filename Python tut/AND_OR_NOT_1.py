@@ -12,3 +12,17 @@ if 1000 <= num <= 9999 and (num % 7 == 0 or num % 17 == 0):
     print('YES')
 else:
     print('NO')
+    
+
+'''https://stepik.org/lesson/265083/step/12?unit=246031
+
+Задача
+    Напишите программу, которая принимает три положительных числа и определяет, существует ли невырожденный треугольник с такими сторонами.
+'''
+	
+a, b, c = int(input()), int(input()), int(input())
+
+if a + b > c and a + c >b and b + c > a:
+    print('YES')
+else:
+    print('NO')
