@@ -1,22 +1,45 @@
-/*https://learndb.ru/courses/task/87
+/*https://learndb.ru/courses/task/88
 
 Задача
-Определи общую стоимость по каждому товару из таблицы purchase_item.
+В некоторых магазинах существует "гарантия лучшей цены". Если вы находите такой же товар дешевле в другом магазине, то вам предоставляют скидку в размере определенного процента от разницы цен.
 
-Выведи столбцы:
-purchase_id - идентификатор заказа;
+В этом задании будем предоставлять скидку в размере 50% от разницы цен. Например, если товар в текущем магазине стоит 2000, а в другом 1800, то скидка составит (2000 - 1800) * 0.5 = 100.
+
+Определи размер скидки на товар из product_price от минимальной цены на этот товар по всем магазинам.
 product_id - идентификатор товара;
-price - цена за единицу товара;
-count - количество единиц товара;
-total_price - общая стоимость за весь товар.
+store_id - идентификатор магазина;
+price - цена на товар в магазине;
+discount - размер 50% скидки от минимальной стоимости на товар в других магазинах.
 
-Отсортируй результат сначала по идентификатору заказа, затем по идентификатору товара.*/
-	
-SELECT 
-    purchase_id
-  , product_id
+Отсортируй результат сначала по идентификатору товара, затем по цене на товар в магазине.*/
+
+--C CTE:
+
+WITH t1 AS
+(
+  SELECT 
+      product_id
+    , MIN(price) min_price
+  FROM product_price
+  GROUP BY product_id
+)
+SELECT
+    pp.product_id
+  , store_id
   , price
-  , count
-  , price * count total_price 
-FROM purchase_item
-ORDER BY purchase_id, product_id
+  , (price - min_price) * 0.5 discount
+FROM product_price pp
+  INNER JOIN t1
+    ON pp.product_id = t1.product_id
+ORDER BY product_id, price, store_id
+
+
+--Или короче, с оконной функцией:
+
+SELECT
+    product_id
+  , store_id
+  , price
+  , (price - MIN(price) OVER (PARTITION BY product_id)) * 0.5 discount
+FROM product_price pp
+ORDER BY product_id, price
