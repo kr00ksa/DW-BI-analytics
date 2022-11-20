@@ -57,24 +57,24 @@ FROM timezone
 WHERE RIGHT(time_offset, -4)::integer = 4
 
 
-/*https://learndb.ru/courses/task/93
+/*https://learndb.ru/courses/task/96
 
 Задача
-	Из таблицы product_price получи среднюю стоимость товара в магазине.
+	В договорах часто используют следующие конструкции: "Размер платежа составляет 5% от стоимости, но не менее 1000 рублей".
+	Давай посчитаем предоплату за товары из таблицы product_price по этим правилам (5%, но не менее 1000 рублей).
 
-	Выведи столбцы:
+	Выведи поля:
+	product_id - идентификатор товара ;
 	store_id - идентификатор магазина;
-	average_price - средняя стоимость товара в магазине;
-	average_price_round - средняя стоимость товара в магазине, округленная до копеек (2 знака после запятой)
-	average_price_trunc - средняя стоимость товара в магазине, усеченная до копеек (2 знака после запятой).
+	price - стоимость;
+	prepayment - величина предоплаты, округленная до рублей.
 	
-	Отсортируй результат по average_price по возрастанию.*/
+	Отсортируй результат по цене, идентификатору товара, идентификатору магазина.*/
 
 SELECT
-    store_id
-  , AVG(price) average_price
-  , ROUND(AVG(price), 2) average_price_round
-  , TRUNC(AVG(price), 2) average_price_trunc
+    product_id
+  , store_id
+  , price
+  , ROUND(GREATEST(0.05 * price, 1000)) prepayment
 FROM product_price
-GROUP BY store_id
-ORDER BY average_price
+ORDER BY price, product_id, store_id
