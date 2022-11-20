@@ -33,7 +33,6 @@ FROM product_price pp
     ON pp.product_id = t1.product_id
 ORDER BY product_id, price, store_id
 
-
 --Или короче, с оконной функцией:
 
 SELECT
@@ -43,3 +42,16 @@ SELECT
   , (price - MIN(price) OVER (PARTITION BY product_id)) * 0.5 discount
 FROM product_price pp
 ORDER BY product_id, price
+
+
+/*https://learndb.ru/courses/task/91
+
+Задача
+	Получи идентификатор временной зоны со сдвигом относительно UTC в 4 часа.
+
+	Выведи один столбец:
+	timezone_id - идентификатор временной зоны.*/
+
+SELECT timezone_id
+FROM timezone
+WHERE RIGHT(time_offset, -4)::integer = 4
