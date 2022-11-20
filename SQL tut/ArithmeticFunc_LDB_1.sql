@@ -55,3 +55,26 @@ ORDER BY product_id, price
 SELECT timezone_id
 FROM timezone
 WHERE RIGHT(time_offset, -4)::integer = 4
+
+
+/*https://learndb.ru/courses/task/93
+
+Задача
+	Из таблицы product_price получи среднюю стоимость товара в магазине.
+
+	Выведи столбцы:
+	store_id - идентификатор магазина;
+	average_price - средняя стоимость товара в магазине;
+	average_price_round - средняя стоимость товара в магазине, округленная до копеек (2 знака после запятой)
+	average_price_trunc - средняя стоимость товара в магазине, усеченная до копеек (2 знака после запятой).
+	
+	Отсортируй результат по average_price по возрастанию.*/
+
+SELECT
+    store_id
+  , AVG(price) average_price
+  , ROUND(AVG(price), 2) average_price_round
+  , TRUNC(AVG(price), 2) average_price_trunc
+FROM product_price
+GROUP BY store_id
+ORDER BY average_price
