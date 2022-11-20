@@ -78,3 +78,27 @@ SELECT
   , ROUND(GREATEST(0.05 * price, 1000)) prepayment
 FROM product_price
 ORDER BY price, product_id, store_id
+
+
+/*https://learndb.ru/courses/task/98
+
+Задача
+	Давай посчитаем, на сколько цена на товар в магазине отличается от средней цены на этот товар по всем магазинам. Округлим это число до копеек (2 знака после запятой) и возьмем от него модуль.
+
+	По всем записям из product_price выведи информацию:
+	product_id - идентификатор товара;
+	store_id - идентификатор магазина;
+	price - цена на товар в магазине;
+	price_avg - средняя цена на товар по всем магазинам, округленная до копеек;
+	price_difference - модуль числа от разницы цены на товар в магазине и средней цены на этот товар по всем магазинам, округленной до копеек.
+	
+	Отсортируй результат сначала по идентификатору товара, затем по цене товара в магазине, затем по идентификатору магазина.*/
+
+SELECT
+    product_id
+  , store_id
+  , price
+  , ROUND(AVG(price) OVER (PARTITION BY product_id), 2) price_avg
+  , ABS(price - ROUND(AVG(price) OVER (PARTITION BY product_id), 2)) price_difference
+FROM product_price
+ORDER BY product_id, price, store_id
