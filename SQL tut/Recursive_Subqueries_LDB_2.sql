@@ -76,7 +76,6 @@ WITH RECURSIVE hierarchy AS (
     , last_name
     , 0 AS count_managers
     , NULL AS managers
-    , CONCAT(first_name, ' ', last_name) AS managers_name
   FROM employee
   WHERE manager_id IS NULL
   
@@ -88,7 +87,6 @@ WITH RECURSIVE hierarchy AS (
     , e.last_name
     , h.count_managers + 1 AS count_managers
     , CONCAT(h.managers || '; ', h.first_name, ' ', h.last_name) AS managers
-    , CONCAT(managers_name, '; ', e.first_name, ' ', e.last_name) AS managers_name
   FROM hierarchy h
     INNER JOIN employee e
       ON e.manager_id = h.employee_id
@@ -99,5 +97,5 @@ SELECT
     , last_name
     , count_managers
     , COALESCE(managers, '') AS managers
-FROM hierarchy
-ORDER BY managers_name
+FROM hierarchy h
+ORDER BY CONCAT(h.managers || '; ', h.first_name, ' ', h.last_name)
