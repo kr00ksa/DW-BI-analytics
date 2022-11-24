@@ -38,3 +38,41 @@ WHERE current_iteration < count_iterations
 SELECT result_number
 FROM generation_num
 ORDER BY result_number
+
+
+/*https://learndb.ru/courses/task/105
+
+Задача
+	Для каждого сотрудника выведи количество руководителей над ним.
+	В результате запроса выведи столбцы:
+	employee_id - идентификатор сотрудника;
+	first_name - имя;
+	last_name - фамиля;
+	count_managers - количество руководителей над сотрудником. Если у сотрудника нет руководителя, то выведи 0.*/
+	
+WITH RECURSIVE hierarchy AS (
+  SELECT
+      employee_id
+    , first_name
+    , last_name
+    , 0 AS count_managers
+  FROM employee
+  WHERE manager_id IS NULL
+  
+  UNION ALL
+  
+  SELECT
+      e.employee_id
+    , e.first_name
+    , e.last_name
+    , h.count_managers + 1 AS count_managers
+  FROM hierarchy h
+    INNER JOIN employee e
+      ON e.manager_id = h.employee_id
+)
+SELECT
+    employee_id
+  , first_name
+  , last_name
+  , count_managers    
+FROM hierarchy
