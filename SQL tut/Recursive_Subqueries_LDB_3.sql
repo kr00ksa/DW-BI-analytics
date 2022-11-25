@@ -37,3 +37,79 @@ SELECT
     , full_name
 FROM hierarchy h
 ORDER BY sort
+
+
+/*https://learndb.ru/courses/task/110
+
+Задача
+	Доработай запрос из теории, нумерующий каталоги товаров. Добавь к каталогам товары этих каталогов и выведи два столбца:
+		full_name - полное название, состоящее из четырех точек на каждый уровень вложенности + полный номер в списке + название товара или категории, добавленное через пробел.
+		type - тип объекта: 'категория' для категорий, 'товар' для товаров.
+		
+	Строки должны быть отсортированы по названию с учетом вложенности.
+
+	В результате должна получиться таблица:
+
+	#	full_name	type
+	1	1. Товары для дома	категория
+	2	....1.1. Бытовая техника	категория
+	3	........1.1.1. Пылесос S6	товар
+	4	........1.1.2. Холодильник A2	товар
+	5	2. Цифровая техника	категория
+	...	...	...*/
+
+WITH RECURSIVE hierarchy AS (
+SELECT
+    category_id
+  , parent_category_id
+  , name
+  , 1 AS level
+  , ARRAY[ROW_NUMBER() OVER (ORDER BY name)] AS path_sort
+FROM category c
+WHERE parent_category_id IS NULL
+
+UNION ALL
+
+SELECT
+    c.category_id
+  , c.parent_category_id
+  , c.name
+  , h.level + 1 AS level
+  , h.path_sort || ROW_NUMBER() OVER (PARTITION BY c.parent_category_id ORDER BY c.name) AS path_sort
+FROM hierarchy h
+  INNER JOIN category c
+    ON c.parent_category_id = h.category_id
+)
+, prod_hier AS
+(
+SELECT
+    p.category_id
+  , p.name
+  , h.level + 1 AS level
+  , h.path_sort || ROW_NUMBER() OVER (PARTITION BY p.category_id ORDER BY p.name) AS path_sort
+FROM hierarchy h
+  INNER JOIN product p
+    ON h.category_id = p.category_id
+)
+, t1 AS
+(
+SELECT
+    path_sort
+  , CONCAT(LPAD('', (level - 1) * 4, '.'), ARRAY_TO_STRING(path_sort, '.'), '. ', name) AS full_name
+  , 'категория' AS type
+FROM hierarchy h
+
+UNION ALL
+
+SELECT
+    path_sort
+  , CONCAT(LPAD('', (level - 1) * 4, '.'), ARRAY_TO_STRING(path_sort, '.'), '. ', name) AS full_name
+  , 'товар' AS type
+FROM prod_hier ph
+
+ORDER BY path_sort
+)
+SELECT
+    full_name
+  , type
+FROM t1
