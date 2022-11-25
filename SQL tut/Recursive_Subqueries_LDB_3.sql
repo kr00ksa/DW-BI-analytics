@@ -80,36 +80,30 @@ FROM hierarchy h
   INNER JOIN category c
     ON c.parent_category_id = h.category_id
 )
-, prod_hier AS
-(
-SELECT
-    p.category_id
-  , p.name
-  , h.level + 1 AS level
-  , h.path_sort || ROW_NUMBER() OVER (PARTITION BY p.category_id ORDER BY p.name) AS path_sort
-FROM hierarchy h
-  INNER JOIN product p
-    ON h.category_id = p.category_id
-)
 , t1 AS
 (
 SELECT
-    path_sort
-  , CONCAT(LPAD('', (level - 1) * 4, '.'), ARRAY_TO_STRING(path_sort, '.'), '. ', name) AS full_name
+    category_id
+  , name
+  , level
+  , path_sort
   , 'категория' AS type
 FROM hierarchy h
 
 UNION ALL
 
 SELECT
-    path_sort
-  , CONCAT(LPAD('', (level - 1) * 4, '.'), ARRAY_TO_STRING(path_sort, '.'), '. ', name) AS full_name
+    p.category_id
+  , p.name
+  , h.level + 1 AS level
+  , h.path_sort || ROW_NUMBER() OVER (PARTITION BY p.category_id ORDER BY p.name) AS path_sort
   , 'товар' AS type
-FROM prod_hier ph
-
-ORDER BY path_sort
+FROM hierarchy h
+  INNER JOIN product p
+    ON h.category_id = p.category_id
 )
 SELECT
-    full_name
+    CONCAT(LPAD('', (level - 1) * 4, '.'), ARRAY_TO_STRING(path_sort, '.'), '. ', name) AS full_name
   , type
 FROM t1
+ORDER BY path_sort
