@@ -50,3 +50,21 @@ FROM rank r1
   INNER JOIN rank r2
     ON r1.store_id = r2.store_id AND r1.rank_id != r2.rank_id
 ORDER BY store_id, rank_id, rank_id_other
+
+
+/*https://learndb.ru/courses/task/36
+
+Задача
+	Сравни таблицы product_price и purchase_item и выведи уникальные идентификаторы товаров, которые больше не продаются, но их покупали раньше (отсутствует запись в product_price, но присутствует в purchase_item), либо товар ни разу не продавался (отсутствует запись в purchase_item, но присутствует в product_price). 
+	
+	Выведи столбцы:
+		product_id_price - идентификатор товара из product_price;
+		product_id_purchase - идентификатор товара из purchase_item.*/
+	
+SELECT DISTINCT
+    pp.product_id product_id_price
+  , pi.product_id product_id_purchase
+FROM product_price pp
+  FULL JOIN purchase_item pi
+    ON pi.product_id = pp.product_id
+WHERE pi.product_id IS NULL OR pp.product_id IS NULL
