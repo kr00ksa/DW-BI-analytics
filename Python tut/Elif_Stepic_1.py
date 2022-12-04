@@ -41,3 +41,32 @@ elif col1 == col2 and (col1 == 'красный' or col1 == 'желтый' or col
     print(col1)
 else:
     print('ошибка цвета')
+    
+
+'''https://stepik.org/lesson/265082/step/11?auth=login&thread=solutions&unit=246030
+
+Задача
+    На числовой прямой даны два отрезка: [a1; b1][a1; b1] и [a2; b2][a2; b2]. 
+    Напишите программу, которая находит их пересечение.
+
+    Пересечением двух отрезков может быть:
+        отрезок;
+        точка;
+        пустое множество.
+'''
+
+a1 = int(input())
+b1 = int(input())
+a2 = int(input())
+b2 = int(input())
+
+if a2 > a1:
+    a1 = a2
+if b2 < b1:
+    b1 = b2  
+if a1 < b1:
+    print(a1, b1)
+elif a1 == b1:
+    print(a1)
+else:
+    print('пустое множество')
